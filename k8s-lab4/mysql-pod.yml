@@ -6,3 +6,18 @@ spec:
   containers:
     - name: mysql
       image: mysql:5.7
+      command: 
+       - /bin/sh
+       - -c
+      args:
+        - echo "$MYSQL_USER"
+      envFrom:
+        - secretRef:
+            name: db-secret
+          
+
+
+
+
+
+
