@@ -4,32 +4,48 @@ metadata:
   name: haproxy-ingress-devops
   namespace: haproxy-controller-devops
   labels:
-    app: haproxy-ingress
+    run: haproxy-ingress
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: haproxy-ingress
+      run: haproxy-ingress
   template:
     metadata:
       labels:
-        app: haproxy-ingress
+        run: haproxy-ingress
     spec:
-      serviceAccountName: build-robot
+      serviceAccountName: haproxy-service-account-devops
       containers:
       - name: ingress-container-devops
         image: haproxytech/kubernetes-ingress
         args:
           - --default-backend-service=haproxy-controller-devops/service-backend-devops
+        ports:
+          - name: http
+            containerPort: 80
+          - name: https
+            containerPort: 443
+          - name: stat
+            containerPort: 1024
+        env:
+          - name: TZ
+            value: "Etc/UTC"
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
         resources:
           requests:
+            cpu: "500m"
             memory: "50Mi"
-            cpu: "0.5"
         livenessProbe:
           httpGet:
-            path: /text.html
+            path: /health
             port: 1024
           initialDelaySeconds: 5
-          periodSeconds: 5
-
-
+          periodSeconds: 10
