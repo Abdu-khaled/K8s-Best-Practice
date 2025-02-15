@@ -7,6 +7,5 @@ spec:
     - ReadWriteMany
   capacity:
     storage: 100Mi
-  storageClassName: standard
   hostPath:
     path: /pv/log
